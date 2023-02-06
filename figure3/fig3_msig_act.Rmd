@@ -1,0 +1,177 @@
+---
+title: "fig_3_m_sig_act"
+author: "Mathilde Meyenberg"
+date: "2022-12-13"
+output: html_document
+---
+
+# FIGURE 3 MSig ACT (PANEL D)
+
+#load all relevant libraries
+```{r}
+
+library(here)
+library(MutationalPatterns)
+library(ggplot2)
+library(gridExtra)
+library(tidyverse)
+library(ggheatmap)
+library(ggpubr)
+library(deconstructSigs)
+library(ggrepel)
+library(VariantAnnotation)
+#library(annotation)
+library(mSigAct)
+library(BSgenome.Mmusculus.UCSC.mm10)
+
+```
+
+#load data
+```{r}
+ref_genome = "BSgenome.Mmusculus.UCSC.mm10"
+
+load("~/Desktop/zcan_code/data/filtered_grls.RData")
+
+fig.dir = "~/Desktop/zcan_code/figure3/panel_d_figures"
+out.dir = "~/Desktop/zcan_code/figure3/panel_d_out"
+```
+
+#sample annotation
+```{r}
+# Sample annotation -------------------------------------------------------
+
+sample.annotation.file = "~/Desktop/zcan_code/data/sample_annotation.csv"
+sample.annotation = read.delim(sample.annotation.file)
+sample.annotation = sample.annotation %>% 
+  mutate(Status = ifelse(grepl("70[0-5]$", Sample.Name), "Normal", "Obese"),
+         Color = ifelse(Status == "Obese", "#B0E2FF", "#D2B48C"),
+         sample.names = paste0("A_", Sample.Name))
+
+organoid.samples = sample.annotation %>% 
+  dplyr::filter(Tissue.Type..eg..Root..Blood..Germ.source.. !=  "tail") %>% 
+  dplyr::select("Status","Color", "sample.names")
+
+organoid.samples = organoid.samples %>% mutate(
+  mouseid = gsub("A_48(..).*$", "\\1", sample.names),
+  mouse_label = paste(
+    gsub("A_48(..).*$", "\\1", sample.names),
+    ifelse(grepl("70[0-5]$", sample.names), "Normal", "Obese"),
+    gsub("A_48.*(.)$", "\\1", sample.names), sep = "_")
+)
+
+mm_colors = c("#D2B48C","#B0E2FF")
+```
+
+```{r}
+#correct row names for mSigAct
+row_names_m_sig_format <- c('ACAA', 'ACCA', 'ACGA', 'ACTA', 'CCAA', 'CCCA', 'CCGA', 'CCTA', 'GCAA', 'GCCA', 'GCGA', 'GCTA', 'TCAA', 'TCCA', 'TCGA', 'TCTA', 'ACAG', 'ACCG', 'ACGG', 'ACTG', 'CCAG', 'CCCG', 'CCGG', 'CCTG', 'GCAG', 'GCCG', 'GCGG', 'GCTG', 'TCAG', 'TCCG', 'TCGG', 'TCTG', 'ACAT', 'ACCT', 'ACGT', 'ACTT', 'CCAT', 'CCCT', 'CCGT', 'CCTT', 'GCAT', 'GCCT', 'GCGT', 'GCTT', 'TCAT', 'TCCT', 'TCGT', 'TCTT', 'ATAA', 'ATCA', 'ATGA', 'ATTA', 'CTAA', 'CTCA', 'CTGA', 'CTTA', 'GTAA', 'GTCA', 'GTGA', 'GTTA', 'TTAA', 'TTCA', 'TTGA', 'TTTA', 'ATAC', 'ATCC', 'ATGC', 'ATTC', 'CTAC', 'CTCC', 'CTGC', 'CTTC', 'GTAC', 'GTCC', 'GTGC', 'GTTC', 'TTAC', 'TTCC', 'TTGC', 'TTTC', 'ATAG', 'ATCG', 'ATGG', 'ATTG', 'CTAG', 'CTCG', 'CTGG', 'CTTG', 'GTAG', 'GTCG', 'GTGG', 'GTTG', 'TTAG', 'TTCG', 'TTGG', 'TTTG')
+
+```
+
+
+
+#validating signature assignment 
+```{r}
+# Sparse Assignment (this is signature refitting with only SBS1, SBS5, SBS18, SBS40)  -------------------------------------------------------------
+
+snv_mut_mat = MutationalPatterns::mut_matrix(vcf_list = snv_grl, ref_genome = ref_genome)
+rownames(snv_mut_mat) <- row_names_m_sig_format
+
+#define signatures of interest
+sigs_interest = (MutationalPatterns::get_known_signatures())[,c(1,5,25,46)]
+rownames(sigs_interest) <- row_names_m_sig_format
+
+mSigAct_sparse_activities = SparseAssignActivity(snv_mut_mat,sigs_interest, max.level=3, p.thresh = 0.05, num.parallel.samples = 1, output.dir = out.dir, m.opts = DefaultManyOpts())
+
+mSig.gg = as.data.frame(mSigAct_sparse_activities$proposed.assignment) %>%
+  pivot_longer(everything(), names_to = "Sample", values_to = "Counts")
+
+mSig.gg$Status = organoid.samples[match(mSig.gg$Sample, organoid.samples$sample.names), "Status"]
+mSig.gg$MouseId = organoid.samples[match(mSig.gg$Sample, organoid.samples$sample.names), "mouseid"]
+
+ordered.samples = c( organoid.samples %>% filter(Status == "Normal") %>% pull(sample.names),
+                     organoid.samples %>% filter(Status == "Obese") %>% pull(sample.names))
+
+```
+
+#signature presence test
+```{r}
+ # signature presence test for SBS1, SBS5, SBS18, SBS40 ------------------------
+# SignaturePresenceTest ---------------------------------------------------
+sigs.prop_all <- ExposureProportions(mutation.type = "SBS96",
+                                 cancer.type = "ColoRect-AdenoCA")
+sigs.prop <- sigs.prop_all[c(1,2,8,11)]
+
+spectra_input = snv_mut_mat
+all.signature.precense.tests = list()
+
+for (sig.index in seq_along(sigs.prop)) {
+  cat(names(sigs.prop)[sig.index], "\n")
+  all.signature.precense.tests[[names(sigs.prop)[sig.index]]] = 
+    SignaturePresenceTest(
+      spectra = spectra_input,
+      sigs = sigs_interest,
+      target.sig.index = sig.index,
+      m.opts = DefaultManyOpts(),
+      mc.cores = 3
+    )
+}
+
+presence.test.summary.stats = list()
+
+for (sig in names(all.signature.precense.tests) ) {
+  
+  df = data.frame( 
+    statistic = sapply(all.signature.precense.tests[[sig]],
+                       function(x) x$statistic),
+    chisq.p = sapply(all.signature.precense.tests[[sig]],
+                     function(x) x$chisq.p) 
+  ) 
+  df$chisq.p[ df$chisq.p > 0.05] = 1
+  df$minus_logP = -log10(df$chisq.p)
+  
+  df = df %>% rownames_to_column(var = "Sample")
+  
+  df$Status = organoid.samples[match(df$Sample, organoid.samples$sample.names), "Status"]
+  df$MouseId = organoid.samples[match(df$Sample, organoid.samples$sample.names), "mouseid"]
+  
+  presence.test.summary.stats[[sig]] = df
+}
+
+
+mm_colors = c("#D2B48C","#B0E2FF")
+
+presence.test.summary.stats[["SBS1"]] %>% 
+  mutate(Sample = factor(Sample, levels = ordered.samples)) %>% 
+  ggplot(aes(x = Sample, y = statistic, alpha = minus_logP, fill = Status, color = Status)) + 
+  geom_bar(stat = "identity") +
+  # facet_wrap(~Sig, nrow = 3, scales = "free_y") + 
+  theme_bw(base_size = 14) + 
+  # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 9)) 
+  theme(axis.text.x = element_text(angle = 90, size = 8),
+        panel.grid = element_blank()) + 
+  scale_x_discrete(labels = gsub("A_48(..).*$", "\\1", ordered.samples))
+
+local.fig.dir = file.path(fig.dir, "signature.presence")
+if (! file.exists(local.fig.dir)) {
+  dir.create(local.fig.dir)
+}
+
+for (sig in names(all.signature.precense.tests) ) {
+  sig.presence.p = presence.test.summary.stats[[sig]] %>% 
+    mutate(Sample = factor(Sample, levels = ordered.samples)) %>% 
+    ggplot(aes(x = Sample, y = statistic, alpha = minus_logP, fill = Status)) + 
+    geom_bar(stat = "identity") +
+    scale_fill_manual(values=mm_colors)+
+    # facet_wrap(~Sig, nrow = 3, scales = "free_y") + 
+    theme_bw(base_size = 14) + 
+    # theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 9)) 
+    theme(axis.text.x = element_text(angle = 90, size = 8),
+          panel.grid = element_blank()) + 
+    scale_x_discrete(labels = gsub("A_48(..).*$", "\\1", ordered.samples)) + 
+    ggtitle(paste0("Signature presence test for ", sig))
+  ggsave(plot = sig.presence.p, filename = file.path(local.fig.dir, paste0(sig, ".pdf")),
+         width = 6, height = 4)
+}
+```
+

@@ -1,0 +1,242 @@
+---
+title: "figure3_code_share"
+output: html_document
+date: "2023-02-02"
+---
+
+# panel A(left) and B were generated using run_sigprofiler_snv.py
+
+```{r}
+#load libraries
+library(MutationalPatterns)
+library(BSgenome)
+library(BiocManager)
+library(BSgenome.Mmusculus.UCSC.mm10)
+ref_genome <- "BSgenome.Mmusculus.UCSC.mm10"
+library(ref_genome, character.only = TRUE)
+library(ggplot2)
+library(tidyverse)
+library(lsa, quietly = TRUE)
+library(data.table)
+library(gridExtra)
+library(ggheatmap)
+library(ggpubr)
+library(deconstructSigs)
+library(ggrepel)
+library(VariantAnnotation)
+library(mSigAct)
+```
+
+```{r}
+#define metadata (sample names)
+sample_names <- c("2_c2", "2_c3", "2_c4", "2_c5",
+            "3_c2", "3_c3", "3_c4", "3_c5",
+            "15_c1", "15_c2", "15_c3", "15_c4",
+            "26_c2", "26_c3", "26_c4", "26_c5",
+            "28_c1", "28_c2", "28_c3", "28_c4",
+        "17_c1", "17_c2", "17_c3",
+         "19_c1", "19_c2", "19_c3", "19_c4",
+         "23_c1", "23_c2", "23_c3", "23_c4",
+         "24_c1", "24_c3", "24_c4", "24_c5",
+         "36_c2", "36_c3", "36_c4", "36_c5"
+)
+
+n_sample_names <- c("2_c2", "2_c3", "2_c4", "2_c5",
+            "3_c2", "3_c3", "3_c4", "3_c5",
+            "15_c1", "15_c2", "15_c3", "15_c4",
+            "26_c2", "26_c3", "26_c4", "26_c5",
+            "28_c1", "28_c2", "28_c3", "28_c4")
+
+hfd_sample_names <- c("17_c1", "17_c2", "17_c3",
+         "19_c1", "19_c2", "19_c3", "19_c4",
+         "23_c1", "23_c2", "23_c3", "23_c4",
+         "24_c1", "24_c3", "24_c4", "24_c5",
+         "36_c2", "36_c3", "36_c4", "36_c5")
+
+#define metadata diet type
+diet <- c(rep("normal", 20), rep("high fat", 19))
+```
+
+```{r}
+#load data
+load("~/Desktop/zcan_code/data/snv_grl.RData")
+```
+
+```{r}
+#count mutations
+
+#channel mutation types
+type_occurrences <- mut_type_occurrences(snv_grl, ref_genome)
+
+#96 channel mutation types
+mut_mat <- mut_matrix(vcf_list = snv_grl, ref_genome = ref_genome)
+
+```
+
+```{r}
+#summary statistics
+
+#section mutation matrix by diet
+mut_mat_n <- mut_mat[,c(1:20)]
+mut_mat_hfd <- mut_mat[,c(21:39)]
+
+#sum by diet
+n_diet_profile = rowMeans(mut_mat_n)
+n_diet_profile_sd = apply(mut_mat_n,1,sd)
+hfd_diet_profile = rowMeans(mut_mat_hfd)
+hfd_diet_profile_sd = apply(mut_mat_hfd,1,sd)
+diet_profile = cbind(hfd_diet_profile, n_diet_profile)
+
+#sum by mouse
+m2 = rowMeans(mut_mat_n[,c(1:4)])
+m3 = rowMeans(mut_mat_n[,c(5:8)])
+m15 = rowMeans(mut_mat_n[,c(9:12)])
+m26 = rowMeans(mut_mat_n[,c(13:16)])
+m28 = rowMeans(mut_mat_n[,c(17:20)])
+
+m17 = rowMeans(mut_mat_hfd[,c(1:3)])
+m19 = rowMeans(mut_mat_hfd[,c(4:7)])
+m23 = rowMeans(mut_mat_hfd[,c(8:11)])
+m24 = rowMeans(mut_mat_hfd[,c(12:15)])
+m36 = rowMeans(mut_mat_hfd[,c(16:19)])
+
+n_mice <- cbind(m2, m3, m15, m26, m28)
+
+hfd_mice <- cbind(m17, m19, m23, m24, m36)
+
+mouse_profile <- cbind(hfd_mice, n_mice)
+```
+
+#PANEL A (right)
+```{r}
+#get cosmic signatures
+signatures = get_known_signatures()
+
+#carry over correct nomenclature for mutation types
+mut_channels = row.names(mut_mat)
+row.names(signatures) <- mut_channels
+cosmic_interest = signatures[ ,c(5,25)]
+
+panel_a_right_1 <- plot_96_profile(cosmic_interest, ymax = 0.12)
+panel_a_right_1 <- panel_a_right_1 + theme(axis.text.y = element_text(size=12),axis.title.y = element_text(size=14),
+                 axis.title.x = element_text(size = 14), axis.text.x = element_text(size =9))
+
+panel_a_right_1
+
+panel_a_right_2 <- plot_96_profile(signatures[, c(1,5)], ymax = 0.4)
+panel_a_right_2 <- panel_a_right_2 + theme(axis.text.y = element_text(size=12),axis.title.y = element_text(size=14),
+                 axis.title.x = element_text(size = 14))
+
+panel_a_right_2
+```
+
+
+#PANEL C
+```{r}
+#get known signatures
+signatures = get_known_signatures()
+
+#perform best subset refitting
+#with the mutational signatures which are active in colon:
+#1,3,4, 5, 6, 8, 18, 40
+best_subset_refit <- fit_to_signatures_strict(mut_mat,
+                                              signatures[,c(1,3,4,5,21,25,46)],
+                                              max_delta = 0.002,
+                                              method = "best_subset")
+
+################################################
+#definen colors for plotting
+mm_colors = c("#7FFFD4", "#FFA07A", "#836FFF", "#7CCD7C", "#EEE5DE",
+              "#EE82EE", "#FFEC8B")
+
+#### FOR Standard Diet mice MICE ##############################################
+
+#temporarily store plot data
+p_tmp = plot_contribution(best_subset_refit$fit_res$contribution[,c(1:20)],
+  coord_flip = FALSE,
+  mode = "absolute", palette = mm_colors
+)
+#pull out total contribution data to reorder bars
+bar_data = p_tmp$data %>% group_by(Sample) %>% mutate(sum(Contribution))
+
+#make a  sort frame to find the correct order of bars
+sorting_data = bar_data$`sum(Contribution)` %>% unique()
+sorting_frame = cbind(n_sample_names, sorting_data)
+sorted = data.frame(sorting_frame[order(sorting_data, decreasing = TRUE), ])
+
+#pull out data to be plotted from temporary plot
+plotting_data_n <- data.frame(best_subset_refit$fit_res$contribution[,c(1:20)])
+colnames(plotting_data_n) <- n_sample_names
+#resort data to be plotted
+plotting_data_n_sorted <- setcolorder(plotting_data_n, sorted[,1])
+
+#plot sorted columns graph
+panel_c_lower <- plot_contribution(plotting_data_n_sorted,
+  coord_flip = FALSE,
+  mode = "absolute", palette = mm_colors
+)
+
+panel_c_lower
+
+#### FOR HFD MICE ###########################################################
+#temporarily store plot data
+p_tmp = plot_contribution(best_subset_refit$fit_res$contribution[,c(21:39)],
+  coord_flip = FALSE,
+  mode = "absolute", palette = mm_colors
+)
+#pull out total contribution data to reorder bars
+bar_data = p_tmp$data %>% group_by(Sample) %>% mutate(sum(Contribution))
+
+#make a sort frame to find the correct order of bars
+sorting_data = bar_data$`sum(Contribution)` %>% unique()
+sorting_frame = cbind(hfd_sample_names, sorting_data)
+sorted = data.frame(sorting_frame[order(sorting_data, decreasing = TRUE), ])
+
+#pull out data to be plotted
+plotting_data_hfd <- data.frame(best_subset_refit$fit_res$contribution[,c(21:39)])
+colnames(plotting_data_hfd) <- hfd_sample_names
+#resort data to be plotted
+plotting_data_hfd_sorted <- setcolorder(plotting_data_hfd, sorted[,1])
+
+
+
+panel_c_upper <- plot_contribution(plotting_data_hfd_sorted,
+  coord_flip = FALSE,
+  mode = "absolute", palette = mm_colors
+)
+
+panel_c_upper
+```
+
+
+```{r}
+#export figure to PDF
+setwd('~/Desktop')
+
+pdf("Rplot_figure2.pdf", width = 12, height =6,)
+plot(panel_a_right_1)
+plot(panel_a_right_2)
+plot(panel_c_upper)
+plot(panel_c_lower)
+
+dev.off()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
