@@ -1,0 +1,207 @@
+---
+title: "figure4"
+author: "Mathilde Meyenberg"
+date: "2022-11-30"
+output: html_document
+---
+
+```{r}
+library(MutationalPatterns)
+library(BSgenome)
+library(BiocManager)
+library(BSgenome.Mmusculus.UCSC.mm10)
+ref_genome <- "BSgenome.Mmusculus.UCSC.mm10"
+library(ref_genome, character.only = TRUE)
+library("gridExtra")
+library(ggplot2)
+library(tidyverse)
+library(lsa, quietly = TRUE)
+library(data.table)
+```
+
+```{r}
+####### data annotation, loading, pre-processing
+
+sample_names <- c("2_c2", "2_c3", "2_c4", "2_c5",
+            "3_c2", "3_c3", "3_c4", "3_c5",
+            "15_c1", "15_c2", "15_c3", "15_c4",
+        "17_c1", "17_c2", "17_c3",
+         "19_c1", "19_c2", "19_c3", "19_c4",
+         "23_c1", "23_c2", "23_c3", "23_c4",
+         "24_c1", "24_c3", "24_c4", "24_c5",
+         "26_c2", "26_c3", "26_c4", "26_c5",
+          "28_c1", "28_c2", "28_c3", "28_c4",
+         "36_c2", "36_c3", "36_c4", "36_c5"
+        )
+
+n <- c("2_c2", "2_c3", "2_c4", "2_c5",
+       "3_c2", "3_c3", "3_c4", "3_c5",
+       "15_c1", "15_c2", "15_c3", "15_c4",
+       "26_c2", "26_c3", "26_c4", "26_c5",
+       "28_c1", "28_c2", "28_c3", "28_c4"
+       )
+  
+hfd <- c("17_c1", "17_c2", "17_c3",
+         "19_c1", "19_c2", "19_c3", "19_c4",
+         "23_c1", "23_c2", "23_c3", "23_c4",
+         "24_c1", "24_c3", "24_c4", "24_c5",
+         "36_c2", "36_c3", "36_c4", "36_c5"
+         )
+
+#load data
+load('~/Desktop/zcan_code/data/indel_grl.RData')
+
+#pull out indel contexts
+check <- GRangesList(common.indels)
+check <- get_indel_context(check, ref_genome)
+check_counts <- count_indel_contexts(check)
+check_counts <- subset(check_counts, select = -c(A_48170804))
+
+#rename indel matrix with shorter sample names
+mut_mat <- check_counts
+colnames(mut_mat) <- sample_names
+
+#pull out by diet
+mut_mat_hfd <- mut_mat[,hfd]
+mut_mat_n <- mut_mat[,n]
+
+#summarize by mouse (aggregate organoid clones)
+#hfd
+m17 = rowMeans(mut_mat_hfd[,c(1:3)])
+m19 = rowMeans(mut_mat_hfd[,c(4:7)])
+m23 = rowMeans(mut_mat_hfd[,c(8:11)])
+m24 = rowMeans(mut_mat_hfd[,c(12:15)])
+m36 = rowMeans(mut_mat_hfd[,c(16:19)])
+
+hfd_mice <- cbind(m17, m19, m23, m24, m36)
+
+#n diet
+m2 = rowMeans(mut_mat_n[,c(1:4)])
+m3 = rowMeans(mut_mat_n[,c(5:8)])
+m15 = rowMeans(mut_mat_n[,c(9:12)])
+m26 = rowMeans(mut_mat_n[,c(13:16)])
+m28 = rowMeans(mut_mat_n[,c(17:20)])
+
+n_mice <- cbind(m2, m3, m15, m26, m28)
+
+#sumamrize by diet (aggregate clones and mice per diet group)
+diet_profile_hfd <- rowMeans(mut_mat_hfd)
+diet_profile_n <- rowMeans(mut_mat_n)
+
+diet_profile <- cbind(diet_profile_hfd, diet_profile_n)
+
+#sort and annotate mut_mat
+mut_mat_sorted <- cbind(mut_mat_n, mut_mat_hfd)
+diet <- c(rep("normal", 20), rep("high fat", 19))
+
+#pool the sample by diet
+mut_mat_pooled <- pool_mut_mat(mut_mat_sorted, grouping = diet)
+
+```
+
+#PANEL A AND B -indel contexts
+```{r}
+panel_a <- plot_main_indel_contexts(diet_profile)
+
+panel_b <- plot_indel_contexts(diet_profile, condensed = FALSE)
+```
+#################################################################
+#INDEL PROFILES ERROR BARS
+```{r}
+source('~/Desktop/zcan_code/figure2/96_channel_error_bar_functions.R')
+
+panel_a_1 <-add_error_bars_indel_all(mut_mat_sorted, diet_profile, channel_no = 83)
+
+panel_b_1 <- add_error_bars_indel_main(mut_mat_sorted, diet_profile, channel_no = 16)
+```
+
+# Cosine similarities main and extended indel contexts
+```{r}
+print(cosine(diet_profile)) #this is for extended indel context
+hfd_main_indel_profile <- panel_a$data$count[1:16]
+n_diet_main_indel_profile <- panel_a$data$count[17:32]
+
+print(cosine(hfd_main_indel_profile, n_diet_main_indel_profile))
+
+hfd_ext_indel_profile <- panel_b$data$count[1:83]
+n_ext_indel_profile <- panel_b$data$count[84:166]
+
+print(cosine(hfd_ext_indel_profile, n_ext_indel_profile))
+```
+
+# PANEL C (left was produced using the run_sigprofiler_indels.py script)
+
+## PANEL C (right) 
+```{r}
+signatures = get_known_signatures(muttype = 'indel', source = 'COSMIC_v3.2')
+nmf_decomposed = signatures[,c(1,2,12)]
+rownames(nmf_decomposed) <- rownames(mut_mat)
+panel_c_right <- plot_indel_contexts(nmf_decomposed)
+```
+
+
+# PANEL D was produced using the run_sigprofiler_indels.py script
+
+# BEST SUBSET APPROACH WITH ALL ID Signatures
+# PANEL E
+```{r}
+#calculate best subset refit
+best_subset_refit <- fit_to_signatures_strict(mut_mat_sorted, signatures, max_delta = 0.009, method = "best_subset")
+
+#using all 18 INDEL signatures in COSMIC
+```
+
+
+```{r}
+#define plotting colors
+#ID2 = #FFB90F
+#ID1 = #8FBC8F or #66CDAA
+#ID12 = #B452CD
+mm_colors = c('#8FBC8F', '#FFB90F',
+              '#FFB6C1', '#FFFF00', '#FFFF00', '#FFFF00', '#87CEFA', '#FFFF00', '#9AFF9A', '#FFFF00', '#FFFF00',
+              '#B452CD', '#FFFF00', '#FF6347')
+```
+
+
+```{r}
+#### FOR ALL MICE ############
+
+source('~/Desktop/zcan_code/figure4/sort_bars_function.R')
+plotting_data_sorted <- sort_bars(best_subset_refit$fit_res$contribution, sample_names)
+
+panel_e <- plot_contribution(plotting_data_sorted,
+  coord_flip = FALSE,
+  mode = "absolute", palette = mm_colors)
+
+```
+
+# PANEL F
+```{r}
+contri_boots_pooled <- fit_to_signatures_bootstrapped(mut_mat_pooled,
+  signatures,
+  n_boots = 1000,
+  method = "strict"
+)
+
+
+panel_f <- plot_bootstrapped_contribution(contri_boots_pooled, 
+                               mode = "relative", 
+                               plot_type = "dotplot")
+```
+
+
+```{r}
+setwd('~/Desktop')
+
+pdf("Figure_4.pdf", width = 12, height =6,)
+plot(panel_a)
+plot(panel_a_1)
+plot(panel_b)
+plot(panel_b_1)
+plot(panel_c_right)
+plot(panel_e)
+plot(panel_f)
+
+dev.off()
+```
+
