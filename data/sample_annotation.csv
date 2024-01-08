@@ -1,51 +1,51 @@
-Nucleic Acid Type	Status	Sample Name	Species	Species Classification	Tissue Type (eg: Root, Blood. Germ source.)	Conc. (ng/ µl)	Vol (µl)	Total Amount (ng)	Fragment Size (Required for PCR product only)	Amplified region (For amplicon metagenomics only)	Remarks
-Genomic DNA	Dissolved TE Buffer	48020702	mouse	animal	intestinal stem cells	7.18	100	718			
-Genomic DNA	Dissolved TE Buffer	48020703	mouse	animal	intestinal stem cells	3.06	100	306			
-Genomic DNA	Dissolved TE Buffer	48020704	mouse	animal	intestinal stem cells	4.08	100	408			
-Genomic DNA	Dissolved TE Buffer	48020705	mouse	animal	intestinal stem cells	1.97	100	197			
-Genomic DNA	Dissolved TE Buffer	48020700	mouse	animal	tail	31.4	30	942			
-Genomic DNA	Dissolved TE Buffer	48030702	mouse	animal	intestinal stem cells	5.3	100	530			
-Genomic DNA	Dissolved TE Buffer	48030703	mouse	animal	intestinal stem cells	2.86	100	286			
-Genomic DNA	Dissolved TE Buffer	48030704	mouse	animal	intestinal stem cells	6.88	100	688			
-Genomic DNA	Dissolved TE Buffer	48030705	mouse	animal	intestinal stem cells	3.68	100	368			
-Genomic DNA	Dissolved TE Buffer	48030700	mouse	animal	tail	63.2	30	1896			
-Genomic DNA	Dissolved TE Buffer	48150701	mouse	animal	intestinal stem cells	3.36	100	336			
-Genomic DNA	Dissolved TE Buffer	48150702	mouse	animal	intestinal stem cells	2.52	100	252			
-Genomic DNA	Dissolved TE Buffer	48150703	mouse	animal	intestinal stem cells	5.02	100	502			
-Genomic DNA	Dissolved TE Buffer	48150704	mouse	animal	intestinal stem cells	4.64	100	464			
-Genomic DNA	Dissolved TE Buffer	48150700	mouse	animal	tail	62.2	30	1866			
-Genomic DNA	Dissolved TE Buffer	48170801	mouse	animal	intestinal stem cells	3.36	100	336			
-Genomic DNA	Dissolved TE Buffer	48170802	mouse	animal	intestinal stem cells	2.52	100	252			
-Genomic DNA	Dissolved TE Buffer	48170803	mouse	animal	intestinal stem cells	5.02	100	502			
-Genomic DNA	Dissolved TE Buffer	48170804	mouse	animal	intestinal stem cells	4.64	100	464			
-Genomic DNA	Dissolved TE Buffer	48170800	mouse	animal	tail	64.8	30	1944			
-Genomic DNA	Dissolved TE Buffer	48190801	mouse	animal	intestinal stem cells	2.8	100	280			
-Genomic DNA	Dissolved TE Buffer	48190802	mouse	animal	intestinal stem cells	3.86	100	386			
-Genomic DNA	Dissolved TE Buffer	48190803	mouse	animal	intestinal stem cells	3.5	100	350			
-Genomic DNA	Dissolved TE Buffer	48190804	mouse	animal	intestinal stem cells	3.24	100	324			
-Genomic DNA	Dissolved TE Buffer	48190800	mouse	animal	tail	67	30	2010			
-Genomic DNA	Dissolved TE Buffer	48230801	mouse	animal	intestinal stem cells	3.04	100	304			
-Genomic DNA	Dissolved TE Buffer	48230802	mouse	animal	intestinal stem cells	4.38	100	438			
-Genomic DNA	Dissolved TE Buffer	48230803	mouse	animal	intestinal stem cells	5.46	100	546			
-Genomic DNA	Dissolved TE Buffer	48230804	mouse	animal	intestinal stem cells	3.22	100	322			
-Genomic DNA	Dissolved TE Buffer	48230800	mouse	animal	tail	60.6	30	1818			
-Genomic DNA	Dissolved TE Buffer	48240801	mouse	animal	intestinal stem cells	4.34	100	434			
-Genomic DNA	Dissolved TE Buffer	48240803	mouse	animal	intestinal stem cells	3.7	100	370			
-Genomic DNA	Dissolved TE Buffer	48240804	mouse	animal	intestinal stem cells	4.02	100	402			
-Genomic DNA	Dissolved TE Buffer	48240805	mouse	animal	intestinal stem cells	5.02	100	502			
-Genomic DNA	Dissolved TE Buffer	48240800	mouse	animal	tail	71.4	30	2142			
-Genomic DNA	Dissolved TE Buffer	48260702	mouse	animal	intestinal stem cells	5.1	100	510			
-Genomic DNA	Dissolved TE Buffer	48260703	mouse	animal	intestinal stem cells	6.12	100	612			
-Genomic DNA	Dissolved TE Buffer	48260704	mouse	animal	intestinal stem cells	3.14	100	314			
-Genomic DNA	Dissolved TE Buffer	48260705	mouse	animal	intestinal stem cells	4.48	100	448			
-Genomic DNA	Dissolved TE Buffer	48260700	mouse	animal	tail	37.6	30	1128			
-Genomic DNA	Dissolved TE Buffer	48280701	mouse	animal	intestinal stem cells	6.66	100	666			
-Genomic DNA	Dissolved TE Buffer	48280702	mouse	animal	intestinal stem cells	3.82	100	382			
-Genomic DNA	Dissolved TE Buffer	48280703	mouse	animal	intestinal stem cells	6.98	100	698			
-Genomic DNA	Dissolved TE Buffer	48280704	mouse	animal	intestinal stem cells	4.78	100	478			
-Genomic DNA	Dissolved TE Buffer	48280700	mouse	animal	tail	22	50	1100			
-Genomic DNA	Dissolved TE Buffer	48360802	mouse	animal	intestinal stem cells	2.58	100	258			
-Genomic DNA	Dissolved TE Buffer	48360803	mouse	animal	intestinal stem cells	4.72	100	472			
-Genomic DNA	Dissolved TE Buffer	48360804	mouse	animal	intestinal stem cells	3.16	100	316			
-Genomic DNA	Dissolved TE Buffer	48360805	mouse	animal	intestinal stem cells	3.8	100	380			
-Genomic DNA	Dissolved TE Buffer	48360800	mouse	animal	tail	42.2	50	2110			
+Nucleic Acid Type;Status;Sample Name;sample_id_used_in_RData;sample_id_used_in_paper;diet;exposure_length_in_weeks;Species;Species Classification;Tissue Type (eg: Root, Blood. Germ source.);Conc. (ng/ µl);Vol (µl);Total Amount (ng);Fragment Size (Required for PCR product only);Amplified region (For amplicon metagenomics only);Remarks
+Genomic DNA;Dissolved TE Buffer;48020702;A_48020702;2_c2;SD;48;mouse;animal;intestinal stem cells;7.18;100;718;;;
+Genomic DNA;Dissolved TE Buffer;48020703;A_48020703;2_c3;SD;48;mouse;animal;intestinal stem cells;3.06;100;306;;;
+Genomic DNA;Dissolved TE Buffer;48020704;A_48020704;2_c4;SD;48;mouse;animal;intestinal stem cells;4.08;100;408;;;
+Genomic DNA;Dissolved TE Buffer;48020705;A_48020705;2_c5;SD;48;mouse;animal;intestinal stem cells;1.97;100;197;;;
+Genomic DNA;Dissolved TE Buffer;48020700;A_48020700;NA;SD;48;mouse;animal;tail;31.4;30;942;;;
+Genomic DNA;Dissolved TE Buffer;48030702;A_48030702;3_c2;SD;48;mouse;animal;intestinal stem cells;5.3;100;530;;;
+Genomic DNA;Dissolved TE Buffer;48030703;A_48030703;3_c3;SD;48;mouse;animal;intestinal stem cells;2.86;100;286;;;
+Genomic DNA;Dissolved TE Buffer;48030704;A_48030704;3_c4;SD;48;mouse;animal;intestinal stem cells;6.88;100;688;;;
+Genomic DNA;Dissolved TE Buffer;48030705;A_48030705;3_c5;SD;48;mouse;animal;intestinal stem cells;3.68;100;368;;;
+Genomic DNA;Dissolved TE Buffer;48030700;A_48030700;NA;SD;48;mouse;animal;tail;63.2;30;1896;;;
+Genomic DNA;Dissolved TE Buffer;48150701;A_48150701;15_c1;SD;48;mouse;animal;intestinal stem cells;3.36;100;336;;;
+Genomic DNA;Dissolved TE Buffer;48150702;A_48150702;15_c2;SD;48;mouse;animal;intestinal stem cells;2.52;100;252;;;
+Genomic DNA;Dissolved TE Buffer;48150703;A_48150703;15_c3;SD;48;mouse;animal;intestinal stem cells;5.02;100;502;;;
+Genomic DNA;Dissolved TE Buffer;48150704;A_48150704;15_c4;SD;48;mouse;animal;intestinal stem cells;4.64;100;464;;;
+Genomic DNA;Dissolved TE Buffer;48150700;A_48150700;NA;SD;48;mouse;animal;tail;62.2;30;1866;;;
+Genomic DNA;Dissolved TE Buffer;48170801;A_48170801;17_c1;HFD;48;mouse;animal;intestinal stem cells;3.36;100;336;;;
+Genomic DNA;Dissolved TE Buffer;48170802;A_48170802;17_c2;HFD;48;mouse;animal;intestinal stem cells;2.52;100;252;;;
+Genomic DNA;Dissolved TE Buffer;48170803;A_48170803;17_c3;HFD;48;mouse;animal;intestinal stem cells;5.02;100;502;;;
+Genomic DNA;Dissolved TE Buffer;48170804;A_48170804;17_c4;HFD;48;mouse;animal;intestinal stem cells;4.64;100;464;;;
+Genomic DNA;Dissolved TE Buffer;48170800;A_48170800;NA;HFD;48;mouse;animal;tail;64.8;30;1944;;;
+Genomic DNA;Dissolved TE Buffer;48190801;A_48190801;19_c1;HFD;48;mouse;animal;intestinal stem cells;2.8;100;280;;;
+Genomic DNA;Dissolved TE Buffer;48190802;A_48190802;19_c2;HFD;48;mouse;animal;intestinal stem cells;3.86;100;386;;;
+Genomic DNA;Dissolved TE Buffer;48190803;A_48190803;19_c3;HFD;48;mouse;animal;intestinal stem cells;3.5;100;350;;;
+Genomic DNA;Dissolved TE Buffer;48190804;A_48190804;19_c4;HFD;48;mouse;animal;intestinal stem cells;3.24;100;324;;;
+Genomic DNA;Dissolved TE Buffer;48190800;A_48190800;NA;HFD;48;mouse;animal;tail;67;30;2010;;;
+Genomic DNA;Dissolved TE Buffer;48230801;A_48230801;23_c1;HFD;48;mouse;animal;intestinal stem cells;3.04;100;304;;;
+Genomic DNA;Dissolved TE Buffer;48230802;A_48230802;23_c2;HFD;48;mouse;animal;intestinal stem cells;4.38;100;438;;;
+Genomic DNA;Dissolved TE Buffer;48230803;A_48230803;23_c3;HFD;48;mouse;animal;intestinal stem cells;5.46;100;546;;;
+Genomic DNA;Dissolved TE Buffer;48230804;A_48230804;23_c4;HFD;48;mouse;animal;intestinal stem cells;3.22;100;322;;;
+Genomic DNA;Dissolved TE Buffer;48230800;A_48230800;NA;HFD;48;mouse;animal;tail;60.6;30;1818;;;
+Genomic DNA;Dissolved TE Buffer;48240801;A_48240801;24_c1;HFD;48;mouse;animal;intestinal stem cells;4.34;100;434;;;
+Genomic DNA;Dissolved TE Buffer;48240803;A_48240803;24_c3;HFD;48;mouse;animal;intestinal stem cells;3.7;100;370;;;
+Genomic DNA;Dissolved TE Buffer;48240804;A_48240804;24_c4;HFD;48;mouse;animal;intestinal stem cells;4.02;100;402;;;
+Genomic DNA;Dissolved TE Buffer;48240805;A_48240805;24_c5;HFD;48;mouse;animal;intestinal stem cells;5.02;100;502;;;
+Genomic DNA;Dissolved TE Buffer;48240800;A_48240800;NA;HFD;48;mouse;animal;tail;71.4;30;2142;;;
+Genomic DNA;Dissolved TE Buffer;48260702;A_48260702;26_c2;SD;48;mouse;animal;intestinal stem cells;5.1;100;510;;;
+Genomic DNA;Dissolved TE Buffer;48260703;A_48260703;26_c3;SD;48;mouse;animal;intestinal stem cells;6.12;100;612;;;
+Genomic DNA;Dissolved TE Buffer;48260704;A_48260704;26_c4;SD;48;mouse;animal;intestinal stem cells;3.14;100;314;;;
+Genomic DNA;Dissolved TE Buffer;48260705;A_48260705;26_c5;SD;48;mouse;animal;intestinal stem cells;4.48;100;448;;;
+Genomic DNA;Dissolved TE Buffer;48260700;A_48260700;NA;SD;48;mouse;animal;tail;37.6;30;1128;;;
+Genomic DNA;Dissolved TE Buffer;48280701;A_48280701;28_c1;SD;48;mouse;animal;intestinal stem cells;6.66;100;666;;;
+Genomic DNA;Dissolved TE Buffer;48280702;A_48280702;28_c2;SD;48;mouse;animal;intestinal stem cells;3.82;100;382;;;
+Genomic DNA;Dissolved TE Buffer;48280703;A_48280703;28_c3;SD;48;mouse;animal;intestinal stem cells;6.98;100;698;;;
+Genomic DNA;Dissolved TE Buffer;48280704;A_48280704;28_c4;SD;48;mouse;animal;intestinal stem cells;4.78;100;478;;;
+Genomic DNA;Dissolved TE Buffer;48280700;A_48280700;NA;SD;48;mouse;animal;tail;22;50;1100;;;
+Genomic DNA;Dissolved TE Buffer;48360802;A_48360802;36_c2;HFD;48;mouse;animal;intestinal stem cells;2.58;100;258;;;
+Genomic DNA;Dissolved TE Buffer;48360803;A_48360803;36_c3;HFD;48;mouse;animal;intestinal stem cells;4.72;100;472;;;
+Genomic DNA;Dissolved TE Buffer;48360804;A_48360804;36_c4;HFD;48;mouse;animal;intestinal stem cells;3.16;100;316;;;
+Genomic DNA;Dissolved TE Buffer;48360805;A_48360805;36_c5;HFD;48;mouse;animal;intestinal stem cells;3.8;100;380;;;
+Genomic DNA;Dissolved TE Buffer;48360800;A_48360800;NA;HFD;48;mouse;animal;tail;42.2;50;2110;;;
